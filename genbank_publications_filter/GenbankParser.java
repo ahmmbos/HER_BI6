@@ -10,9 +10,12 @@ import java.util.regex.Pattern;
  * TODO: add head documentation of class GenbankParser
  */
 public class GenbankParser {
-    static Pattern regAuthorsPattern = Pattern.compile("AUTHORS\\s+((.|\\n)*?)TITLE", Pattern.DOTALL);    // regex for finding Authors
-    static Pattern regTitlePattern = Pattern.compile("TITLE\\s+((.|\\n)*?)JOURNAL", Pattern.DOTALL);    // regex for finding Tiitle
-    static Pattern regAccessiePatern = Pattern.compile("ACCESSION\\s+([A-Z0-9]+)", Pattern.DOTALL);    // regex for finding Accessie
+    // regex for finding Authors
+    static final Pattern regAuthorsPattern = Pattern.compile("AUTHORS\\s+((.|\\n)*?)TITLE", Pattern.DOTALL);
+    // regex for finding Title
+    static final Pattern regTitlePattern = Pattern.compile("TITLE\\s+((.|\\n)*?)JOURNAL", Pattern.DOTALL);
+    // regex for finding Accessie
+    static final Pattern regAccessiePatern = Pattern.compile("ACCESSION\\s+([A-Z0-9]+)", Pattern.DOTALL);
 
     public static void AuthorTitleHash() {
         Matcher regAuthorsMatcher = regAuthorsPattern.matcher(GenbankGUI.gbff);
@@ -44,20 +47,18 @@ public class GenbankParser {
     public static void TitleAccessieHash () {
         Matcher regTitleMatcher = regTitlePattern.matcher(GenbankGUI.gbff);
         Matcher regAccessieMatcher = regAccessiePatern.matcher(GenbankGUI.gbff);
-        // make hashmap key: Titel value: Accessie
+        // make hashmap key: Title value: Accessie
         if (regTitleMatcher.find() && regAccessieMatcher.find()) {
             String title = regTitleMatcher.group(1);
             String accession = regAccessieMatcher.group(1);
             List<String> tempAccession;
             if (GenbankGUI.TitleAccessieMap.containsKey(title)) {
                 tempAccession = GenbankGUI.TitleAccessieMap.get(title);
-                tempAccession.add(accession);
-                GenbankGUI.TitleAccessieMap.put(title, tempAccession);
             } else {
                 tempAccession = new ArrayList<>();
-                tempAccession.add(accession);
-                GenbankGUI.TitleAccessieMap.put(title, tempAccession);
             }
+            tempAccession.add(accession);
+            GenbankGUI.TitleAccessieMap.put(title, tempAccession);
         } else {
             System.out.println("no match found: Title -- Accessie");
         }

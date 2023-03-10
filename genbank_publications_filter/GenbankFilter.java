@@ -15,14 +15,14 @@ public class GenbankFilter {
     public static void searchTitle() {
         String searchTextTitle = GenbankGUI.nameFieldSearchTitle.getText();
         String searchTextAuthor = GenbankGUI.nameFieldSearchAuthor.getText();
-        if (searchTextTitle != "") {
+        if (!searchTextTitle.equals("")) {
             if (GenbankGUI.TitleAuthorsMap.containsKey(searchTextTitle)) {
                 List<String> values = GenbankGUI.TitleAuthorsMap.get(searchTextTitle);
                 System.out.println("Values for key '" + searchTextTitle + "': " + values);
             } else {
                 System.out.println("no mathes found");
             }
-            if (searchTextAuthor != "") {
+            if (!searchTextAuthor.equals("")) {
                 if (GenbankGUI.AuthorsTitleMap.containsKey(searchTextTitle)) {
                     List<String> values = GenbankGUI.AuthorsTitleMap.get(searchTextTitle);
                     System.out.println("Values for key '" + searchTextTitle + "': " + values);

@@ -17,39 +17,34 @@ import java.util.List;
  */
 
 public class GenbankGUI extends JFrame implements ActionListener {
-     //Left panel that displays the text field, browse files button, and search buttons.
-    private static JPanel leftPanel = new JPanel();
-     //Panel that displays the information of the authors
-    private static JPanel authorPanel = new JPanel();
-     //Panel that displays the information of the titles
-    static JPanel titlePanel = new JPanel();
-    //input file reader
-    private BufferedReader inFile;
+    //Left panel that displays the text field, browse files button, and search buttons.
+    private static final JPanel leftPanel = new JPanel();
+    //Panel that displays the information of the authors
+    private static final JPanel authorPanel = new JPanel();
+    //Panel that displays the information of the titles
+    static final JPanel titlePanel = new JPanel();
     //text field to input the file name
     private JTextField nameField;
     //Text field to search for titles
     public static JTextField nameFieldSearchTitle;
     //text field to search for authors
     public static JTextField nameFieldSearchAuthor;
-    //File chooser to select a file
-    private JFileChooser fileChooser;
     //the content of the selected file
     public static String gbff = "";
     //Map that stores the titles and their corresponding authors
-    public static Map<String, List<String>> TitleAuthorsMap = new HashMap<>();
+    public static final Map<String, List<String>> TitleAuthorsMap = new HashMap<>();
     //Map that stores the authors and their corresponding titles
-    public static Map<String, List<String>> AuthorsTitleMap = new HashMap<>();
+    public static final Map<String, List<String>> AuthorsTitleMap = new HashMap<>();
     //Map that stores the titles and their corresponding accession numbers
-    public static Map<String, List<String>> TitleAccessieMap = new HashMap<>();
-
+    public static final Map<String, List<String>> TitleAccessieMap = new HashMap<>();
     /**
      * Set up for the GUI
      * It contains the following panels: left panel, title panel and author panel
-     * There are 2 buttons, txtFile and searchTitles/searchAuthors, wich have their own action listeners.
+     * There are 2 buttons, txtFile and searchTitles/searchAuthors, which have their own action listeners.
      * txtFile opens a pop-up window to write a txt file
      * searchTitles/searchAuthors searches for a title or author in the hashmaps.
      * the actionPerformed method opens a JFileChooser to select a file or directory
-     * the b;aderen method reads the selected file or files in the selected directory
+     * the getFile() method reads the selected file or files in the selected directory
      * and stores the information in hashmaps
      * the information in the hashmaps is then displayed in the map table
      */
@@ -99,19 +94,9 @@ public class GenbankGUI extends JFrame implements ActionListener {
         authorPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
         authorPanel.setBounds(675,0,425,850);
 
-        ActionListener writeTxt = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GenbankWriter.pop_up();
-            }
-        };
+        ActionListener writeTxt = e -> GenbankWriter.pop_up();
         txtFile.addActionListener(writeTxt);
-        ActionListener search = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GenbankFilter.searchTitle();
-            }
-        };
+        ActionListener search = e -> GenbankFilter.searchTitle();
 
         searchTitles.addActionListener(search);
         searchAuthors.addActionListener(search);
@@ -129,7 +114,8 @@ public class GenbankGUI extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         File selectedFile;
         int reply;
-        fileChooser = new JFileChooser("src/Files");
+        //File chooser to select a file
+        JFileChooser fileChooser = new JFileChooser("src/Files");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         reply = fileChooser.showOpenDialog(this);
         if (reply == 0) {
@@ -137,26 +123,28 @@ public class GenbankGUI extends JFrame implements ActionListener {
             nameField.setText(selectedFile.getAbsolutePath());
             if (selectedFile.isDirectory()) {
                 File[] files = selectedFile.listFiles();
+                assert files != null;
                 for (File file : files) {
-                    bladeren(file);
+                    getFile(file);
                 }
             } else {
-                bladeren(selectedFile);
+                getFile(selectedFile);
             }
         }
         if (reply == 1) {
             JOptionPane.showMessageDialog(null, "No file selected", "error", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-    private void bladeren(File file) {
+    private void getFile(File file) {
         try {
-            inFile = new BufferedReader(new FileReader(file));
+            //input file reader
+            BufferedReader inFile = new BufferedReader(new FileReader(file));
             String str = "";
             String line;
             int count = 0;
             while ((line = inFile.readLine()) != null && count != 5) {
-                if (!line.startsWith("//")) {
-                    str = "%s%s%n".format(str, line);
+                if (!line.startsWith("//")) { // TODO: rewrite if-statement
+                    str = String.format(str, line);
                 } else if (line.startsWith("//")) {
                     System.out.println(count + ". Started reading file: " + file.getName());
                     gbff = str;
@@ -165,19 +153,19 @@ public class GenbankGUI extends JFrame implements ActionListener {
                     GenbankParser.AuthorTitleHash();
                     str = "";
                     gbff = "";
-                    count++; //count om een limit van 5 aan te geven !!!!! verwijderen !!!!!
-//                    for (Map.Entry<String, List<String>> entry : TitleAuthorsMap.entrySet()) {
-//                        System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-//                    }
+                    count++;
                 }
             }
             inFile.close();
             System.out.println(count + ". Finished reading file: " + file.getName());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
-                    "File error: " + e.toString());
+                    "File error: " + e);
         }
-        JOptionPane.showMessageDialog(null, "File(s) have been succesfully been loaded.\nThey will appear on the right shortly.", "", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null,
+                "File(s) have been successfully been loaded.\nThey will appear on the right shortly.",
+                "",
+                JOptionPane.INFORMATION_MESSAGE);
         GuiMap();
     }
 
@@ -185,15 +173,10 @@ public class GenbankGUI extends JFrame implements ActionListener {
         titlePanel.setLayout(new GridLayout(0, 1));
         JScrollPane scrollPane = new JScrollPane(titlePanel);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        for (Map.Entry<String, List<String>> entry : TitleAuthorsMap.entrySet()) {;
+        for (Map.Entry<String, List<String>> entry : TitleAuthorsMap.entrySet()) {
             JButton button = new JButton(entry.getKey());
             System.out.println(entry);
             titlePanel.add(button);
         }
     }
 }
-
-//TO-do
-// 2. GUI verder uitbreiden: Autheurs -- Titles en aanklikbaar om te switchen
-// 3. zoek functie: button voor zoeken naar autheurs en zoeken naar titels
-// 4. wegschrijven van een bepaalde titel dmv "TitleAccessieHasmap" --> potentieel door start line van het bestand opteslaan om het terug te kunnen vinden
