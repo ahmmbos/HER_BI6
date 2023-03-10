@@ -1,5 +1,6 @@
+package HER_BI6_ABos;
 /**
- * <h1>Herkansing Bio-informatica, blok 6</h1>
+ * <h1>Resit bioinformatics final exam (course 6)</h1>
  * <p>Application that reads (.gbff)-files from Genbank and lets the user search
  * through authors and/or publications. Authors and publications are connected:
  * the application lets the user "surf" through the authors and publications.</p>
@@ -12,6 +13,6 @@
  * @author Amber Bos
  * @since 10-03-2023
  */
-public class Main {
+public class GUI {
     // do something
 }
