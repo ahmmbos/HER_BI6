@@ -1,4 +1,5 @@
-package HER_BI6_ABos;
+package genbank_publications_filter;
+
 /**
  * <h1>Resit bioinformatics final exam (course 6)</h1>
  * <p>Application that reads (.gbff)-files from Genbank and lets the user search
@@ -12,7 +13,11 @@ package HER_BI6_ABos;
  *
  * @author Amber Bos
  * @since 10-03-2023
- */
-public class GUI {
-    // do something
+*/
+
+public class Main {
+    public static void main(String[] args) {
+        GenbankGUI gui = new GenbankGUI();
+        gui.CreateGui();
+    }
 }
