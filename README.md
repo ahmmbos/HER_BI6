@@ -1,9 +1,8 @@
-<h1>Herkansing Bio-informatica, blok 6</h1>
-<h3>Samenvatting</h3>
+<h1>Resit bioinformatics final exam (course 6)</h1>
 <p>Application (with GUI) that reads (.gbff)-files from Genbank and lets the user search
 through authors and/or publications. Authors and publications are connected:
 the application lets the user "surf" through the authors and publications.</p>
-<h3>Opdracht beschrijving:</h3>
+<h3>Instructions application:</h3>
 Develop a program that is able to read the genbank flat file (.gbff) files and read the
 data in a list.
 Make it possible to look per person or per publication which genomes are linked to that entry
