@@ -7,36 +7,38 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * TODO: add head documentation of class GenbankParser
+ * TODO: add head documentation of class "GenbankParser"
  */
 public class GenbankParser {
-    // regex for finding Authors
-    static final Pattern regAuthorsPattern = Pattern.compile("AUTHORS\\s+((.|\\n)*?)TITLE", Pattern.DOTALL);
-    // regex for finding Title
-    static final Pattern regTitlePattern = Pattern.compile("TITLE\\s+((.|\\n)*?)JOURNAL", Pattern.DOTALL);
-    // regex for finding Accessie
-    static final Pattern regAccessiePatern = Pattern.compile("ACCESSION\\s+([A-Z0-9]+)", Pattern.DOTALL);
+    // Regex for finding author
+    static final Pattern authorPattern = Pattern.compile("AUTHORS\\s+((.|\\n)*?)TITLE", Pattern.DOTALL);
+    // Regex for finding title
+    static final Pattern titlePattern = Pattern.compile("TITLE\\s+((.|\\n)*?)JOURNAL", Pattern.DOTALL);
+    // Matcher for finding author
+    static Matcher authorMatcher = authorPattern.matcher(GenbankGUI.gbffContent);
+    // Matcher for finding title
+    static Matcher titleMatcher = titlePattern.matcher(GenbankGUI.gbffContent);
 
+    /**
+     * TODO: add authorTitleHash method documentation
+     */
     public static void AuthorTitleHash() {
-        Matcher regAuthorsMatcher = regAuthorsPattern.matcher(GenbankGUI.gbff);
-        Matcher regTitleMatcher = regTitlePattern.matcher(GenbankGUI.gbff);
         // make hashmap key: Author value: Title
-        if (regAuthorsMatcher.find() && regTitleMatcher.find()) {
-            String title = regTitleMatcher.group(1);
-            String authorsString = regAuthorsMatcher.group(1).replaceAll(",\\s+", "");
+        if (authorMatcher.find() && titleMatcher.find()) {
+            String title = titleMatcher.group(1);
+            String authorsString = authorMatcher.group(1).replaceAll(",\\s+", "");
             String[] authors = authorsString.split("\\s*\\.\\s*");
-            List<String> tempTitle;
             for (String author : authors) {
-                if (GenbankGUI.AuthorsTitleMap.containsKey(author)) {
-                    tempTitle = GenbankGUI.AuthorsTitleMap.get(author);
+                if (GenbankGUI.authorToTitle.containsKey(author)) {
+                    List<String> tempTitle = GenbankGUI.authorToTitle.get(author);
                     if (!tempTitle.contains(title)) {
                         tempTitle.add(title);
                     }
-                    GenbankGUI.AuthorsTitleMap.put(author, tempTitle);
+                    GenbankGUI.authorToTitle.put(author, tempTitle);
                 } else {
-                    tempTitle = new ArrayList<>();
+                    List<String> tempTitle = new ArrayList<>();
                     tempTitle.add(title);
-                    GenbankGUI.AuthorsTitleMap.put(author, tempTitle);
+                    GenbankGUI.authorToTitle.put(author, tempTitle);
                 }
             }
         } else {
@@ -44,46 +46,28 @@ public class GenbankParser {
         }
     }
 
-    public static void TitleAccessieHash () {
-        Matcher regTitleMatcher = regTitlePattern.matcher(GenbankGUI.gbff);
-        Matcher regAccessieMatcher = regAccessiePatern.matcher(GenbankGUI.gbff);
-        // make hashmap key: Title value: Accessie
-        if (regTitleMatcher.find() && regAccessieMatcher.find()) {
-            String title = regTitleMatcher.group(1);
-            String accession = regAccessieMatcher.group(1);
-            List<String> tempAccession;
-            if (GenbankGUI.TitleAccessieMap.containsKey(title)) {
-                tempAccession = GenbankGUI.TitleAccessieMap.get(title);
-            } else {
-                tempAccession = new ArrayList<>();
-            }
-            tempAccession.add(accession);
-            GenbankGUI.TitleAccessieMap.put(title, tempAccession);
-        } else {
-            System.out.println("no match found: Title -- Accessie");
-        }
-    }
+    /**
+     * TODO: add titleAuthorHash method documentation
+     */
         public static void TitleAuthorHash () {
-        Matcher regAuthorsMatcher = regAuthorsPattern.matcher(GenbankGUI.gbff);
-        Matcher regTitleMatcher = regTitlePattern.matcher(GenbankGUI.gbff);
         // make hashmap key: Title value: Authors
-        if (regTitleMatcher.find() && regAuthorsMatcher.find()) {
-            String authorsString = regAuthorsMatcher.group(1).replaceAll(",\\s+", "");
-            String title = regTitleMatcher.group(1);
+        if (titleMatcher.find() && authorMatcher.find()) {
+            String authorsString = authorMatcher.group(1).replaceAll(",\\s+", "");
+            String title = titleMatcher.group(1);
             List<String> tempAuthors;
             String[] authors = authorsString.split("\\s*\\.\\s*"); // array to individual
-            if (GenbankGUI.TitleAuthorsMap.containsKey(title)) {
-                tempAuthors = GenbankGUI.TitleAuthorsMap.get(title);
+            if (GenbankGUI.titleToAuthor.containsKey(title)) {
+                tempAuthors = GenbankGUI.titleToAuthor.get(title);
                 for (String author : authors) {
                     if (!tempAuthors.contains(author)) {
                         tempAuthors.add(author);
                     }
                 }
-                GenbankGUI.TitleAuthorsMap.put(title, tempAuthors);
+                GenbankGUI.titleToAuthor.put(title, tempAuthors);
             } else {
                 tempAuthors = new ArrayList<>();
                 tempAuthors.add(Arrays.toString(authors));
-                GenbankGUI.TitleAuthorsMap.put(title, tempAuthors);
+                GenbankGUI.titleToAuthor.put(title, tempAuthors);
             }
         } else {
             System.out.println("no match found: Title -- Authors");

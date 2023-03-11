@@ -9,94 +9,85 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
+ *      * Set up for the GUI
+ *      * It contains the following panels: left panel, title panel and author panel
+ *      * There are 2 buttons, txtFile and searchTitles/searchAuthors, which have their own action listeners.
+ *      * txtFile opens a pop-up window to write a txt file
+ *      * searchTitles/searchAuthors searches for a title or author in the hashmaps.
+ *      * the actionPerformed method opens a JFileChooser to select a file or directory
+ *      * the getFile() method reads the selected file or files in the selected directory
+ *      * and stores the information in hashmaps
+ *      * the information in the hashmaps is then displayed in the map table
  * TODO: add documentation header of class GUI
  */
 
 public class GenbankGUI extends JFrame implements ActionListener {
-    //Left panel that displays the text field, browse files button, and search buttons.
-    private static final JPanel leftPanel = new JPanel();
-    //Panel that displays the information of the authors
-    private static final JPanel authorPanel = new JPanel();
-    //Panel that displays the information of the titles
-    static final JPanel titlePanel = new JPanel();
-    //text field to input the file name
-    private JTextField nameField;
-    //Text field to search for titles
-    public static JTextField nameFieldSearchTitle;
-    //text field to search for authors
-    public static JTextField nameFieldSearchAuthor;
-    //the content of the selected file
-    public static String gbff = "";
-    //Map that stores the titles and their corresponding authors
-    public static final Map<String, List<String>> TitleAuthorsMap = new HashMap<>();
-    //Map that stores the authors and their corresponding titles
-    public static final Map<String, List<String>> AuthorsTitleMap = new HashMap<>();
-    //Map that stores the titles and their corresponding accession numbers
-    public static final Map<String, List<String>> TitleAccessieMap = new HashMap<>();
+    public JPanel menuPanel, authorPanel, titlePanel;
+    public JTextField inputFileField, inputTitleField, inputAuthorField;
+    // The content of the selected file
+    public static String gbffContent = "";
+    public JButton searchTitleButton, searchAuthorButton, saveButton, fileButton;
+    // Hashmap that stores the titles and their corresponding authors
+    public static Map<String, List<String>> titleToAuthor = new HashMap<>();
+    // Hashmap that stores the authors and their corresponding titles
+    public static Map<String, List<String>> authorToTitle = new HashMap<>();
+
     /**
-     * Set up for the GUI
-     * It contains the following panels: left panel, title panel and author panel
-     * There are 2 buttons, txtFile and searchTitles/searchAuthors, which have their own action listeners.
-     * txtFile opens a pop-up window to write a txt file
-     * searchTitles/searchAuthors searches for a title or author in the hashmaps.
-     * the actionPerformed method opens a JFileChooser to select a file or directory
-     * the getFile() method reads the selected file or files in the selected directory
-     * and stores the information in hashmaps
-     * the information in the hashmaps is then displayed in the map table
+     * TODO: add createGUI method documentation
      */
-    void CreateGui() {
+    void createGui() {
+        // Left panel
+        menuPanel.setBackground(Color.GRAY);
+        menuPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+        menuPanel.setBounds(0,0,250,850);
 
-        //left panel
-        leftPanel.setBackground(Color.GRAY);
-        leftPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-        leftPanel.setBounds(0,0,250,850);
-
-        // browse files
-        nameField = new JTextField(("file.gbff"));
-        nameField.setColumns(15);
-        leftPanel.add(nameField);
+        // Browse files
+        inputFileField = new JTextField(("file.gbff"));
+        inputFileField.setColumns(15);
+        menuPanel.add(inputFileField);
         JButton browseFiles = new JButton("Browse files");
         browseFiles.setBounds(100,50,150,50);
         browseFiles.addActionListener(this);
-        leftPanel.add(browseFiles);
+        menuPanel.add(browseFiles);
 
-        //search title
-        nameFieldSearchTitle = new JTextField("");
-        nameFieldSearchTitle.setColumns(15);
-        leftPanel.add(nameFieldSearchTitle);
-        JButton searchTitles = new JButton("Search title");
+        // Search title
+        inputTitleField = new JTextField("");
+        inputTitleField.setColumns(15);
+        menuPanel.add(inputTitleField);
+        JButton searchTitles = new JButton("Search Title");
         searchTitles.setBounds(100,100,150,50);
-        leftPanel.add(searchTitles);
+        menuPanel.add(searchTitles);
 
-        //search authors
-        nameFieldSearchAuthor = new JTextField("");
-        nameFieldSearchAuthor.setColumns(15);
-        leftPanel.add(nameFieldSearchAuthor);
-        JButton searchAuthors = new JButton("Search Authors");
+        // Search authors
+        inputAuthorField = new JTextField("");
+        inputAuthorField.setColumns(15);
+        menuPanel.add(inputAuthorField);
+        JButton searchAuthors = new JButton("Search Author");
         searchAuthors.setBounds(100,150,150,50);
-        leftPanel.add(searchAuthors);
+        menuPanel.add(searchAuthors);
 
-        //make txt file
+        // Make text file
         JButton txtFile = new JButton("Make txt file");
-        leftPanel.add(txtFile);
+        menuPanel.add(txtFile);
 
-        // title panel
+        // Title panel
         titlePanel.setBackground(Color.lightGray);
         titlePanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
         titlePanel.setBounds(250,0,425,850);
 
-        // author panel
+        // Author panel
         authorPanel.setBackground(Color.lightGray);
         authorPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
         authorPanel.setBounds(675,0,425,850);
 
         ActionListener writeTxt = e -> GenbankWriter.pop_up();
         txtFile.addActionListener(writeTxt);
-        ActionListener search = e -> GenbankFilter.searchTitle();
+        ActionListener search = e -> GenbankFilter.getTitle();
 
         searchTitles.addActionListener(search);
         searchAuthors.addActionListener(search);
@@ -104,14 +95,42 @@ public class GenbankGUI extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setSize(1100,850);
-        setTitle("TentamenOpdracht");
+        setTitle("Genbank Publications Filter");
         setVisible(true);
 
-        add(leftPanel);
+        add(menuPanel);
         add(titlePanel);
         add(authorPanel);
     }
-    public void actionPerformed(ActionEvent event) {
+    /**
+     * TODO: add "actionPerformed" method documentation
+     * @param event
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == searchTitleButton) {
+            // do something
+            // GenbankParser.getContent()
+            // GenbankFilter.getTitle()
+        }
+        if (e.getSource() == searchAuthorButton) {
+            // do something
+            // GenbankParser.getContent()
+            // GenbankFilter.getAuthor()
+        }
+        if (e.getSource() == saveButton) {
+            // do something
+            // GenbankWriter().getText()
+            // GenbankWriter().writeText()
+        }
+        if (e.getSource() == fileButton) {
+            // do something
+            // getFile()
+        }
+    }
+
+    /** searchTitleButton, searchAuthorButton, saveButton, fileButton
+    public void actionPerformed(ActionEvent event) { // TODO: change "actionPerformed"
         File selectedFile;
         int reply;
         //File chooser to select a file
@@ -120,7 +139,7 @@ public class GenbankGUI extends JFrame implements ActionListener {
         reply = fileChooser.showOpenDialog(this);
         if (reply == 0) {
             selectedFile = fileChooser.getSelectedFile();
-            nameField.setText(selectedFile.getAbsolutePath());
+            inputFileField.setText(selectedFile.getAbsolutePath());
             if (selectedFile.isDirectory()) {
                 File[] files = selectedFile.listFiles();
                 assert files != null;
@@ -135,6 +154,11 @@ public class GenbankGUI extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(null, "No file selected", "error", JOptionPane.INFORMATION_MESSAGE);
         }
     }
+     */
+    /**
+     * TODO: add getFile method documentation
+     * @param file
+     */
     private void getFile(File file) {
         try {
             //input file reader
@@ -147,12 +171,11 @@ public class GenbankGUI extends JFrame implements ActionListener {
                     str = String.format(str, line);
                 } else if (line.startsWith("//")) {
                     System.out.println(count + ". Started reading file: " + file.getName());
-                    gbff = str;
-                    GenbankParser.TitleAccessieHash();
+                    gbffContent = str;
                     GenbankParser.TitleAuthorHash();
                     GenbankParser.AuthorTitleHash();
                     str = "";
-                    gbff = "";
+                    gbffContent = "";
                     count++;
                 }
             }
@@ -166,14 +189,17 @@ public class GenbankGUI extends JFrame implements ActionListener {
                 "File(s) have been successfully been loaded.\nThey will appear on the right shortly.",
                 "",
                 JOptionPane.INFORMATION_MESSAGE);
-        GuiMap();
+        GUIMap();
     }
 
-    public static void GuiMap() {
+    /**
+     * TODO: delete this
+     */
+    public void GUIMap() {
         titlePanel.setLayout(new GridLayout(0, 1));
         JScrollPane scrollPane = new JScrollPane(titlePanel);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        for (Map.Entry<String, List<String>> entry : TitleAuthorsMap.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : titleToAuthor.entrySet()) {
             JButton button = new JButton(entry.getKey());
             System.out.println(entry);
             titlePanel.add(button);

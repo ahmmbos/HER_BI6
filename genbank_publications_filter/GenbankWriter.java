@@ -6,12 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 /**
- * TODO: add head documentation of class GenbankParser
+ * TODO: add head documentation of class GenbankWriter
  */
+// TODO: change whole class
 public class GenbankWriter {
-    /**
-     * Class Write provides methods for exporting data to a text file.
-     */
     static final JFrame frame = new JFrame("Search to write");
     private static String textAuthor = "";
     private static String textTitle = "";
@@ -56,7 +54,7 @@ public class GenbankWriter {
      */
     public static void WriteTxt() {
         if (!textTitle.equals("")) {
-            List<String> values = GenbankGUI.TitleAuthorsMap.get(textTitle);
+            List<String> values = GenbankGUI.titleToAuthor.get(textTitle);
             if (values == null) {
                 System.out.println("Search term not found");
                 return;
@@ -71,7 +69,7 @@ public class GenbankWriter {
                 throw new RuntimeException(e);
             }
         } else if (!textAuthor.equals("")) {
-            List<String> values = GenbankGUI.AuthorsTitleMap.get(textAuthor);
+            List<String> values = GenbankGUI.authorToTitle.get(textAuthor);
             if (values == null) {
                 System.out.println("Search term not found");
                 return;

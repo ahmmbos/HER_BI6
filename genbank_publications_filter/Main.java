@@ -16,7 +16,7 @@ package genbank_publications_filter;
 */
 public class Main {
     public static void main(String[] args) {
-        GenbankGUI gui = new GenbankGUI();
-        gui.CreateGui();
+        GenbankGUI GUI = new GenbankGUI();
+        GUI.createGui();
     }
 }

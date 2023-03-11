@@ -2,34 +2,54 @@ package genbank_publications_filter;
 
 import java.util.List;
 /**
- * TODO: add head documentation of class GenbankParser
+ *      * Searches for a title and/or an author in the "TitleAuthorsMap" and "AuthorsTitlemap" hashmaps.
+ *      * If a title is provided, it will search for the title in "TitleAuthorsMap" and print the values associated with the key.
+ *      * If an author is provided in addition to a title, it will search for the title in "AuthorsTitleMap"and print the values associated with the key.
+ *      * If no match is found, it will print "no matches found".
+ * TODO: add head documentation of class "GenbankParser"
  */
 public class GenbankFilter {
+    static String strTitle = GenbankGUI.inputTitleField.getText();
+    static String strAuthor = GenbankGUI.inputAuthorField.getText();
     /**
-     * Searches for a title and/or an author in the "TitleAuthorsMap" and "AuthorsTitlemap" hashmaps.
-     * If a title is provided, it will search for the title in "TitleAuthorsMap" and print the values assosiated with the key.
-     * If an author is provided in addition to a title, it will search for the title in "AuthorsTitleMap"and print the values assosiated with the key.
-     * If no match is found, it will print "no matches found".
+     * TODO: add "getTitle" method documentation
      */
-    //TODO: laat er echt mathes gevonden kunnen worden.
-    public static void searchTitle() {
-        String searchTextTitle = GenbankGUI.nameFieldSearchTitle.getText();
-        String searchTextAuthor = GenbankGUI.nameFieldSearchAuthor.getText();
-        if (!searchTextTitle.equals("")) {
-            if (GenbankGUI.TitleAuthorsMap.containsKey(searchTextTitle)) {
-                List<String> values = GenbankGUI.TitleAuthorsMap.get(searchTextTitle);
-                System.out.println("Values for key '" + searchTextTitle + "': " + values);
+    public static void getTitle() {
+        if (!strTitle.equals("")) {
+            if (GenbankGUI.titleToAuthor.containsKey(strTitle)) {
+                List<String> values = GenbankGUI.titleToAuthor.get(strTitle);
+                System.out.println("Values for key '" + strTitle + "': " + values);
             } else {
-                System.out.println("no mathes found");
+                System.out.println("no matches found");
             }
-            if (!searchTextAuthor.equals("")) {
-                if (GenbankGUI.AuthorsTitleMap.containsKey(searchTextTitle)) {
-                    List<String> values = GenbankGUI.AuthorsTitleMap.get(searchTextTitle);
-                    System.out.println("Values for key '" + searchTextTitle + "': " + values);
+            if (!strAuthor.equals("")) {
+                if (GenbankGUI.authorToTitle.containsKey(strTitle)) {
+                    List<String> values = GenbankGUI.authorToTitle.get(strAuthor);
+                    System.out.println("Values for key '" + strAuthor + "': " + values);
                 } else {
-                    System.out.println("no mathes found");
+                    System.out.println("no matches found");
                 }
             }
         }
     }
+    /** TODO: make method "getAuthor"
+    public static void searchTitle() {
+        if (!strTitle.equals("")) {
+            if (GenbankGUI.titleToAuthor.containsKey(strTitle)) {
+                List<String> values = GenbankGUI.titleToAuthor.get(strTitle);
+                System.out.println("Values for key '" + strTitle + "': " + values);
+            } else {
+                System.out.println("no matches found");
+            }
+            if (!strAuthor.equals("")) {
+                if (GenbankGUI.authorToTitle.containsKey(strTitle)) {
+                    List<String> values = GenbankGUI.authorToTitle.get(strAuthor);
+                    System.out.println("Values for key '" + strAuthor + "': " + values);
+                } else {
+                    System.out.println("no matches found");
+                }
+            }
+        }
+    }
+     */
 }
