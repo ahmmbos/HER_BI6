@@ -1,22 +1,22 @@
 package genbank_publications_filter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 /**
- *      * Searches for a title and/or an author in the "TitleAuthorsMap" and "AuthorsTitlemap" hashmaps.
- *      * If a title is provided, it will search for the title in "TitleAuthorsMap" and print the values associated with the key.
- *      * If an author is provided in addition to a title, it will search for the title in "AuthorsTitleMap"and print the values associated with the key.
- *      * If no match is found, it will print "no matches found".
- * TODO: add head documentation of class "GenbankParser"
+ * <h1>Class GenbankFilter():</h1>
+ * Class that filters trough the hashmaps {@link setHashMap()}. The search of the user is filtered through the HashMap.
+ * Output is returned.
  */
 public class GenbankFilter {
     public static String outputText;
     /**
-     * TODO: add "getTitle" method documentation
+     * <h3>Method getTitle()</h3>
+     * <p>Method returns corresponding publication. Searched author {@link getSearchAuthor()} is filterd through
+     * the HashMap {@link setHashMap()} and found publications are added to the outputText.</p>
+     * @return -String- output text for the output textArea
      */
-    public static String getTitle() { //TODO: change method
+    public static String getTitle() {
         Map<String, String> authorToTitle = GenbankParser.getAuthorToTitle();
         String strAuthor = GenbankGUI.getSearchAuthor(); // Gets search name of an author
         outputText = ("The following publications were found for " + strAuthor + ":");
@@ -27,7 +27,12 @@ public class GenbankFilter {
         }
         return outputText;
     }
-    // TODO: make method "getAuthor"
+    /**
+     * <h3>Method getAuthor()</h3>
+     * <p>Method returns corresponding author. Searched publication {@link getSearchTitle()} is filtered through
+     * the HashMap {@link setHashMap()} and found author(s) are added to the outputText.</p>
+     * @return -String- output text for the output textArea
+     */
     public static String getAuthor() {
         Map<String, List<String>> titleToAuthor = GenbankParser.getTitleToAuthor();
         String strTitle = GenbankGUI.getSearchTitle(); // Gets search name of a publication
