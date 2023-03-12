@@ -1,14 +1,10 @@
 package genbank_publications_filter;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,140 +19,100 @@ import java.util.Map;
  *      * the getFile() method reads the selected file or files in the selected directory
  *      * and stores the information in hashmaps
  *      * the information in the hashmaps is then displayed in the map table
- * TODO: add documentation header of class GUI
+ * TODO: add documentation header of class "GenbankGUI"
  */
 
-public class GenbankGUI extends JFrame implements ActionListener {
-    public JPanel menuPanel, authorPanel, titlePanel;
-    public JTextField inputFileField, inputTitleField, inputAuthorField;
+public class GenbankGUI extends JFrame {
+    public JTextArea outputArea;
+    public JTextField fileInputField, authorInputField, titleInputField;
+    public JLabel fileLabel, authorLabel, titleLabel;
+    public JButton fileButton, searchTitleButton, searchAuthorButton, saveButton;
     // The content of the selected file
     public static String gbffContent = "";
-    public JButton searchTitleButton, searchAuthorButton, saveButton, fileButton;
     // Hashmap that stores the titles and their corresponding authors
     public static Map<String, List<String>> titleToAuthor = new HashMap<>();
     // Hashmap that stores the authors and their corresponding titles
     public static Map<String, List<String>> authorToTitle = new HashMap<>();
 
     /**
-     * TODO: add createGUI method documentation
+     * TODO: add "createGUI" method documentation
      */
-    void createGui() {
-        // Left panel
-        menuPanel.setBackground(Color.GRAY);
-        menuPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-        menuPanel.setBounds(0,0,250,850);
-
-        // Browse files
-        inputFileField = new JTextField(("file.gbff"));
-        inputFileField.setColumns(15);
-        menuPanel.add(inputFileField);
-        JButton browseFiles = new JButton("Browse files");
-        browseFiles.setBounds(100,50,150,50);
-        browseFiles.addActionListener(this);
-        menuPanel.add(browseFiles);
-
-        // Search title
-        inputTitleField = new JTextField("");
-        inputTitleField.setColumns(15);
-        menuPanel.add(inputTitleField);
-        JButton searchTitles = new JButton("Search Title");
-        searchTitles.setBounds(100,100,150,50);
-        menuPanel.add(searchTitles);
-
-        // Search authors
-        inputAuthorField = new JTextField("");
-        inputAuthorField.setColumns(15);
-        menuPanel.add(inputAuthorField);
-        JButton searchAuthors = new JButton("Search Author");
-        searchAuthors.setBounds(100,150,150,50);
-        menuPanel.add(searchAuthors);
-
-        // Make text file
-        JButton txtFile = new JButton("Make txt file");
-        menuPanel.add(txtFile);
-
-        // Title panel
-        titlePanel.setBackground(Color.lightGray);
-        titlePanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-        titlePanel.setBounds(250,0,425,850);
-
-        // Author panel
-        authorPanel.setBackground(Color.lightGray);
-        authorPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-        authorPanel.setBounds(675,0,425,850);
-
-        ActionListener writeTxt = e -> GenbankWriter.pop_up();
-        txtFile.addActionListener(writeTxt);
-        ActionListener search = e -> GenbankFilter.getTitle();
-
-        searchTitles.addActionListener(search);
-        searchAuthors.addActionListener(search);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);
-        setSize(1100,850);
-        setTitle("Genbank Publications Filter");
-        setVisible(true);
-
-        add(menuPanel);
-        add(titlePanel);
-        add(authorPanel);
-    }
-    /**
-     * TODO: add "actionPerformed" method documentation
-     * @param event
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == searchTitleButton) {
-            // do something
-            // GenbankParser.getContent()
-            // GenbankFilter.getTitle()
-        }
-        if (e.getSource() == searchAuthorButton) {
-            // do something
-            // GenbankParser.getContent()
-            // GenbankFilter.getAuthor()
-        }
-        if (e.getSource() == saveButton) {
-            // do something
-            // GenbankWriter().getText()
-            // GenbankWriter().writeText()
-        }
-        if (e.getSource() == fileButton) {
-            // do something
-            // getFile()
-        }
+    public void createGui() {
+        // Set start layout:
+        JFrame frame = new JFrame("Genbank File Reader");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Container contentPanel = frame.getContentPane();
+        GroupLayout layout = new GroupLayout(contentPanel);
+        contentPanel.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+        // Contents:
+        outputArea = new JTextArea("");
+        outputArea.setEditable(false);
+        fileInputField = new JTextField("example.gbff");
+        authorInputField = new JTextField("");
+        titleInputField = new JTextField("");
+        fileLabel = new JLabel("Select a gbff-file:");
+        authorLabel = new JLabel("Search publications of a author:");
+        titleLabel = new JLabel("Search authors of a publication:");
+        fileButton = new JButton("Select file");
+        fileButton.addActionListener(new buttonListener());
+        searchTitleButton = new JButton("Search publication(s)");
+        searchTitleButton.addActionListener(new buttonListener());
+        searchAuthorButton = new JButton("Search author(s)");
+        searchAuthorButton.addActionListener(new buttonListener());
+        saveButton = new JButton("Save results");
+        saveButton.addActionListener(new buttonListener());
+        // Set horizontal layout:
+        layout.setHorizontalGroup(
+                layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup()
+                                .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup()
+                                                .addComponent(fileLabel)
+                                                .addComponent(fileInputField)
+                                                .addComponent(fileButton)
+                                                .addComponent(authorLabel)
+                                                .addComponent(authorInputField)
+                                                .addComponent(searchTitleButton)
+                                                .addComponent(titleLabel)
+                                                .addComponent(titleInputField)
+                                                .addComponent(searchAuthorButton)
+                                                .addComponent(saveButton))
+                                        .addComponent(outputArea))));
+        layout.linkSize(SwingConstants.HORIZONTAL, fileLabel, fileInputField, fileButton,
+                authorLabel, authorInputField, searchTitleButton,
+                titleLabel, titleInputField, searchAuthorButton,
+                saveButton);
+        // Set vertical layout:
+        layout.setVerticalGroup(
+                layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup()
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(fileLabel)
+                                        .addComponent(fileInputField)
+                                        .addComponent(fileButton)
+                                        .addComponent(authorLabel)
+                                        .addComponent(authorInputField)
+                                        .addComponent(searchTitleButton)
+                                        .addComponent(titleLabel)
+                                        .addComponent(titleInputField)
+                                        .addComponent(searchAuthorButton)
+                                        .addComponent(saveButton))
+                                .addComponent(outputArea)));
+        layout.linkSize(SwingConstants.VERTICAL, fileInputField, fileButton,
+                authorInputField, searchTitleButton,
+                titleInputField, searchAuthorButton,
+                saveButton);
+        // Open GUI:
+        frame.setPreferredSize(new Dimension(800, 800));
+        frame.pack();
+        frame.setVisible(true);
     }
 
-    /** searchTitleButton, searchAuthorButton, saveButton, fileButton
-    public void actionPerformed(ActionEvent event) { // TODO: change "actionPerformed"
-        File selectedFile;
-        int reply;
-        //File chooser to select a file
-        JFileChooser fileChooser = new JFileChooser("src/Files");
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        reply = fileChooser.showOpenDialog(this);
-        if (reply == 0) {
-            selectedFile = fileChooser.getSelectedFile();
-            inputFileField.setText(selectedFile.getAbsolutePath());
-            if (selectedFile.isDirectory()) {
-                File[] files = selectedFile.listFiles();
-                assert files != null;
-                for (File file : files) {
-                    getFile(file);
-                }
-            } else {
-                getFile(selectedFile);
-            }
-        }
-        if (reply == 1) {
-            JOptionPane.showMessageDialog(null, "No file selected", "error", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-     */
     /**
      * TODO: add getFile method documentation
+     *
      * @param file
      */
     private void getFile(File file) {
@@ -189,20 +145,57 @@ public class GenbankGUI extends JFrame implements ActionListener {
                 "File(s) have been successfully been loaded.\nThey will appear on the right shortly.",
                 "",
                 JOptionPane.INFORMATION_MESSAGE);
-        GUIMap();
     }
 
-    /**
-     * TODO: delete this
-     */
-    public void GUIMap() {
-        titlePanel.setLayout(new GridLayout(0, 1));
-        JScrollPane scrollPane = new JScrollPane(titlePanel);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        for (Map.Entry<String, List<String>> entry : titleToAuthor.entrySet()) {
-            JButton button = new JButton(entry.getKey());
-            System.out.println(entry);
-            titlePanel.add(button);
+    private class buttonListener implements ActionListener { //TODO: make new .class of buttonListener [NOT PRIORITY]
+        /**
+         * TODO: add "actionPerformed" method documentation
+         *
+         * @param event
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == fileButton) {
+                // do something
+                // getFile()
+            }
+            if (e.getSource() == searchTitleButton) {
+                // do something
+                // GenbankParser.getContent()
+                // GenbankFilter.getTitle()
+            }
+            if (e.getSource() == searchAuthorButton) {
+                // do something
+                // GenbankParser.getContent()
+                // GenbankFilter.getAuthor()
+            }
+            if (e.getSource() == saveButton) {
+                String saveText = outputArea.getText();
+                String saveName = JOptionPane.showInputDialog("Enter file name",
+                        ".txt");
+                try {
+                    File newFile = new File(saveName);
+                    if (newFile.createNewFile()) {
+                        FileWriter myWriter = new FileWriter(saveName);
+                        myWriter.write(saveText);
+                        myWriter.close();
+                        JOptionPane.showMessageDialog(null,
+                                "File has been saved",
+                                "File saved",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null,
+                                "File already exists",
+                                "ERROR",
+                                JOptionPane.WARNING_MESSAGE);
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null,
+                            "An error occurred",
+                            "ERROR",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+            }
         }
     }
 }

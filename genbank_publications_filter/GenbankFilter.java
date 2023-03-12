@@ -9,12 +9,11 @@ import java.util.List;
  * TODO: add head documentation of class "GenbankParser"
  */
 public class GenbankFilter {
-    static String strTitle = GenbankGUI.inputTitleField.getText();
-    static String strAuthor = GenbankGUI.inputAuthorField.getText();
     /**
      * TODO: add "getTitle" method documentation
      */
-    public static void getTitle() {
+    /**public void getTitle() { //TODO: change method
+        //getInputTitle();     public String strTitle = GenbankGUI.titleInputField.getText();
         if (!strTitle.equals("")) {
             if (GenbankGUI.titleToAuthor.containsKey(strTitle)) {
                 List<String> values = GenbankGUI.titleToAuthor.get(strTitle);
@@ -34,6 +33,7 @@ public class GenbankFilter {
     }
     /** TODO: make method "getAuthor"
     public static void searchTitle() {
+     public String strAuthor = GenbankGUI.authorInputField.getText();
         if (!strTitle.equals("")) {
             if (GenbankGUI.titleToAuthor.containsKey(strTitle)) {
                 List<String> values = GenbankGUI.titleToAuthor.get(strTitle);
