@@ -5,37 +5,35 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
- *      * Set up for the GUI
- *      * It contains the following panels: left panel, title panel and author panel
- *      * There are 2 buttons, txtFile and searchTitles/searchAuthors, which have their own action listeners.
- *      * txtFile opens a pop-up window to write a txt file
- *      * searchTitles/searchAuthors searches for a title or author in the hashmaps.
- *      * the actionPerformed method opens a JFileChooser to select a file or directory
- *      * the getFile() method reads the selected file or files in the selected directory
- *      * and stores the information in hashmaps
- *      * the information in the hashmaps is then displayed in the map table
- * TODO: add documentation header of class "GenbankGUI"
+ * <h1>Class GenbankGUI:</h1>
+ * <p>Class that opens the GUI and retrieves the information and queries desired by the user via the buttons.
+ * This class responds to four different buttons:<br>
+ * - fileButton: a filepath is retrieved and the chosen filepath is dropped in the fileInputField.<br>
+ * - searchAuthorButton: in the search field a publication is placed by the user. The selected file is
+ * searched for associated authors. The found authors will be displayed in the outputArea.<br>
+ * - searchTitleButton: an author is dropped in the search field by the user.
+ * The prepared file is searched for associated publications. The found publications will be displayed in
+ * the outputArea. <br>
+ * - saveButton: the text in the outputArea is saved in a file.<br></p>
  */
 
 public class GenbankGUI extends JFrame {
+    // TextArea for the output:
     public JTextArea outputArea;
-    public JTextField fileInputField, authorInputField, titleInputField;
+    // Fields for user input: {@see getFileName, getSearchAuthor, getSearchTitle}
+    public static JTextField fileInputField, authorInputField, titleInputField;
+    // Labels for an user friendly GUI:
     public JLabel fileLabel, authorLabel, titleLabel;
+    // Buttons in GUI: {@see buttonLister}
     public JButton fileButton, searchTitleButton, searchAuthorButton, saveButton;
-    // The content of the selected file
-    public static String gbffContent = "";
-    // Hashmap that stores the titles and their corresponding authors
-    public static Map<String, List<String>> titleToAuthor = new HashMap<>();
-    // Hashmap that stores the authors and their corresponding titles
-    public static Map<String, List<String>> authorToTitle = new HashMap<>();
 
     /**
-     * TODO: add "createGUI" method documentation
+     * <h3>Method createGUI():</h3>
+     * <p>Method that makes and opens the GUI. GUI has a menu on the left side and an outputArea on the right.
+     * fileInputField has a start value "example.gbff" {@see getFileName()}.
+     * authorInputField has a start value "Kuwahara,T" for faster debugging.</p>
      */
     public void createGui() {
         // Set start layout:
@@ -49,9 +47,8 @@ public class GenbankGUI extends JFrame {
         // Contents:
         outputArea = new JTextArea("");
         outputArea.setEditable(false);
-        // Added example.gbff for easy and faster testing TODO: remove before handing in
-        fileInputField = new JTextField("/home/tardigrada/Documents/bio-informatica_leerjaar2/informatica/periode2/BI6a_Kans1_ABos/sample.gbff");
-        authorInputField = new JTextField("");
+        fileInputField = new JTextField("example.gbff"); // {@see getFileName}
+        authorInputField = new JTextField("Kuwahara,T"); // Example author
         titleInputField = new JTextField("");
         fileLabel = new JLabel("Select a gbff-file:");
         authorLabel = new JLabel("Search publications of a author:");
@@ -81,6 +78,7 @@ public class GenbankGUI extends JFrame {
                                                 .addComponent(searchAuthorButton)
                                                 .addComponent(saveButton))
                                         .addComponent(outputArea))));
+        // Link the sizes horizontal for a pretty GUI:
         layout.linkSize(SwingConstants.HORIZONTAL, fileLabel, fileInputField, fileButton,
                 authorLabel, authorInputField, searchTitleButton,
                 titleLabel, titleInputField, searchAuthorButton,
@@ -101,88 +99,129 @@ public class GenbankGUI extends JFrame {
                                         .addComponent(searchAuthorButton)
                                         .addComponent(saveButton))
                                 .addComponent(outputArea)));
-        layout.linkSize(SwingConstants.VERTICAL, fileInputField, fileButton,
-                authorInputField, searchTitleButton,
-                titleInputField, searchAuthorButton,
-                saveButton);
+        // Link the sizes vertical for a pretty GUI:
+        layout.linkSize(SwingConstants.VERTICAL, fileInputField, fileButton, authorInputField, searchTitleButton,
+                titleInputField, searchAuthorButton, saveButton);
         // Open GUI:
-        frame.setPreferredSize(new Dimension(800, 800));
+        frame.setPreferredSize(new Dimension(800, 400)); // Not a special reason for this size
         frame.pack();
         frame.setVisible(true);
     }
 
     /**
-     * TODO: add getFile method documentation
-     *
-     * @param file
+     * <h3>Method getFile()</h3>
+     * <p>Method lets user open its documents and browse through files. Chosen file will be saved by saving the
+     * document path name as a string.</p>
+     * @return -String- document path name
      */
-    public static String getFile() {
-        String fileName = new String();
+    public String getFile() {
+        String pathName = "";
         File selectedFile;
         int reply;
         JFileChooser fileChooser = new JFileChooser();
         reply = fileChooser.showOpenDialog(null);
         if (reply == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
-            fileName = selectedFile.getAbsolutePath();
+            pathName = selectedFile.getAbsolutePath();
+        }
+        return pathName;
+    }
+
+    /**
+     * <h3>Method getFileName()</h3>
+     * <p>Method that returns the file name (same as the document path name) {@see getFile()}. If the fileInputField
+     * has "example.gbff" as input, then a saved document path name will be used. Reason is for fast debugging.</p>
+     * @return -String- text of fileInputField
+     */
+    public static String getFileName() {
+        String fileName;
+        // Added example.gbff for easy and faster testing
+        if (fileInputField.getText().equals("example.gbff")) {
+            fileName = "/home/tardigrada/Documents/bio-informatica_leerjaar2/informatica/periode2/BI6a_Kans1_ABos/sample.gbff";
+        } else {
+            fileName = fileInputField.getText();
         }
         return fileName;
     }
-    private void getData() {
-        String fileName = getFile();
-        try {
-            //input file reader
-            BufferedReader inFile = new BufferedReader(new FileReader(fileName));
-            String str = "";
-            String line;
-            int count = 0;
-            while ((line = inFile.readLine()) != null && count != 5) {
-                if (!line.startsWith("//")) { // TODO: rewrite if-statement
-                    str = String.format(str, line);
-                } else if (line.startsWith("//")) {
-                    System.out.println(count + ". Started reading file: " + fileName);
-                    gbffContent = str;
-                    GenbankParser.TitleAuthorHash();
-                    GenbankParser.AuthorTitleHash();
-                    str = "";
-                    gbffContent = "";
-                    count++;
-                }
-            }
-            inFile.close();
-            System.out.println(count + ". Finished reading file: " + fileName);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null,
-                    "File error: " + e);
-        }
-        JOptionPane.showMessageDialog(null,
-                "File(s) have been successfully been loaded.\nThey will appear on the right shortly.",
-                "",
-                JOptionPane.INFORMATION_MESSAGE);
+    /**
+     * <h3>Method getSearchAuthor</h3>
+     * <p>Method that returns the user search input of an author.</p>
+     * @return -String- text of authorInputField
+     */
+    public static String getSearchAuthor() {
+        return authorInputField.getText();
+    }
+    /**
+     * <h3>Method getSearchTitle()</h3>
+     * <p>Method that returns the user search input of a publication title.</p>
+     * @return -string- text of titleInputField
+     */
+    public static String getSearchTitle() {
+        return titleInputField.getText();
     }
 
+    /**
+     * <h1>Class buttonListener:</h1>
+     * - fileButton: a filepath is retrieved and the chosen filepath is dropped in the fileInputField.<br>
+     * - searchAuthorButton: in the search field a publication is placed by the user. The selected file is
+     * searched for associated authors. The found authors will be displayed in the outputArea.<br>
+     * - searchTitleButton: an author is dropped in the search field by the user.
+     * The prepared file is searched for associated publications. The found publications will be displayed in
+     * the outputArea. <br>
+     * - saveButton: the text in the outputArea is saved in a file.<br></p>
+     */
     private class buttonListener implements ActionListener { //TODO: make new .class of buttonListener [NOT PRIORITY]
-        /**
-         * TODO: add "actionPerformed" method documentation
-         *
-         * @param event
-         */
         @Override
         public void actionPerformed(ActionEvent e) {
+            /*
+              fileButton: Sets filename into the input field by letting the user chose the file.
+              @link getFile() -> get file path name
+             */
             if (e.getSource() == fileButton) {
                 String fileName = getFile();
                 fileInputField.setText(fileName);
             }
+            /*
+              searchTitleButton: Lets the user search in file for the corresponding publications. The authorInputField
+              needs to be not empty, or an ERROR will occur.
+              @link getSearchAuthor() -> get user search input of author
+              @link getTitle() -> get found corresponding publications
+            */
             if (e.getSource() == searchTitleButton) {
-                // do something
-                // GenbankParser.getContent()
-                // GenbankFilter.getTitle()
+                String strAuthor = getSearchAuthor();
+                outputArea.setText(""); // Reset output area
+                if (!strAuthor.equals("")) {
+                    String outputText = GenbankFilter.getTitle();
+                    outputArea.setText(outputText);
+                } else {
+                    JOptionPane.showMessageDialog(null,  // Search field is empty
+                            "Search field is empty",
+                            "ERROR",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
+            /*
+              searchAuthorButton: Lets the user search in file for the corresponding authors. The titleInputField
+              needs to be not empty, or an ERROR will occur.
+              @link getSearchTitle() -> get user search input of title
+              @link getAuthor() -> get found corresponding author(s)
+            */
             if (e.getSource() == searchAuthorButton) {
-                // do something
-                // GenbankParser.getContent()
-                // GenbankFilter.getAuthor()
+                String strTitle = getSearchTitle();
+                outputArea.setText(""); // Reset output area
+                if (!strTitle.equals("")) {
+                    String outputText = GenbankFilter.getAuthor();
+                    outputArea.setText(outputText);
+                } else {
+                    JOptionPane.showMessageDialog(null, // Search field is empty
+                            "Search field is empty",
+                            "ERROR",
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
+            /*
+              saveButton: lets user chose the name of a new .txt-file. File will contain the current outputArea text.
+            */
             if (e.getSource() == saveButton) {
                 String saveText = outputArea.getText();
                 String saveName = JOptionPane.showInputDialog("Enter file name",
@@ -193,18 +232,18 @@ public class GenbankGUI extends JFrame {
                         FileWriter myWriter = new FileWriter(saveName);
                         myWriter.write(saveText);
                         myWriter.close();
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(null, // File has been saved
                                 "File has been saved",
                                 "File saved",
                                 JOptionPane.INFORMATION_MESSAGE);
                     } else {
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(null, // File name already exists
                                 "File already exists",
                                 "ERROR",
                                 JOptionPane.WARNING_MESSAGE);
                     }
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null,
+                    JOptionPane.showMessageDialog(null, // Unknown ERROR occurred
                             "An error occurred",
                             "ERROR",
                             JOptionPane.WARNING_MESSAGE);
