@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 /**
  * <h1>Class GenbankParser():</h1>
- * <p>Class that reads the .gbff-file {@link getContent()} and extracts the needed information {@link setHashMaps()}.
- * Authors and titles are places in HashMaps {@link getTitleToAuthor()}{@link getAuthorToTitle()}.</p>
+ * <p>Class that reads the .gbff-file {@see getContent()} and extracts the needed information {@see setHashMaps()}.
+ * Authors and titles are places in HashMaps {@see getTitleToAuthor()}{@see getAuthorToTitle()}.</p>
  */
 public class GenbankParser {
     // Hashmap -> Key: -String- Publication /\ Value: -List- Authors
@@ -41,10 +41,10 @@ public class GenbankParser {
 
     /**
      * <h3>Method setHashMap()</h3>
-     * <p>Method that filters the content of the .gbff-file {@link getContent()}.
+     * <p>Method that filters the content of the .gbff-file {@see getContent()}.
      * Regex pattern is used to find the authors and publications in the content with the matcher.
-     * The extracted data is fine-tuned with regex. Then two HashMaps are made {@link getTitleToAuthor()}
-     * {@link getAuthorToTitle()}</p>
+     * The extracted data is fine-tuned with regex. Then two HashMaps are made {@see getTitleToAuthor()}
+     * {@see getAuthorToTitle()}</p>
      */
     public static void setHashMap() {
         String gbffContent = getContent();
@@ -69,7 +69,7 @@ public class GenbankParser {
 
     /**
      * <h3>Method getTitleToAuthor()</h3>
-     * Returns Hashmap -> keys: publication /\ value: author {@link setHashMap()}.
+     * Returns Hashmap -> keys: publication /\ value: author {@see setHashMap()}.
      * @return -HashMap- titleToAuthor
      */
     public static Map<String, List<String>> getTitleToAuthor() {
@@ -78,7 +78,7 @@ public class GenbankParser {
     }
     /**
      * <h3>Method getAuthorToTitle()</h3>
-     * Returns Hashmap -> keys: author /\ value: publication {@link setHashMap()}.
+     * Returns Hashmap -> keys: author /\ value: publication {@see setHashMap()}.
      * @return -HashMap- authorToTitle
      */
     public static Map<String, String> getAuthorToTitle() {

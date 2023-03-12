@@ -5,15 +5,15 @@ import java.util.Map;
 
 /**
  * <h1>Class GenbankFilter():</h1>
- * Class that filters trough the hashmaps {@link setHashMap()}. The search of the user is filtered through the HashMap.
+ * Class that filters trough the hashmaps {@see setHashMap()}. The search of the user is filtered through the HashMap.
  * Output is returned.
  */
 public class GenbankFilter {
     public static String outputText;
     /**
      * <h3>Method getTitle()</h3>
-     * <p>Method returns corresponding publication. Searched author {@link getSearchAuthor()} is filterd through
-     * the HashMap {@link setHashMap()} and found publications are added to the outputText.</p>
+     * <p>Method returns corresponding publication. Searched author {@see getSearchAuthor()} is filtered through
+     * the HashMap {@see setHashMap()} and found publications are added to the outputText.</p>
      * @return -String- output text for the output textArea
      */
     public static String getTitle() {
@@ -29,8 +29,8 @@ public class GenbankFilter {
     }
     /**
      * <h3>Method getAuthor()</h3>
-     * <p>Method returns corresponding author. Searched publication {@link getSearchTitle()} is filtered through
-     * the HashMap {@link setHashMap()} and found author(s) are added to the outputText.</p>
+     * <p>Method returns corresponding author. Searched publication {@see getSearchTitle()} is filtered through
+     * the HashMap {@see setHashMap()} and found author(s) are added to the outputText.</p>
      * @return -String- output text for the output textArea
      */
     public static String getAuthor() {
