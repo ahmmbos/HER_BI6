@@ -49,7 +49,8 @@ public class GenbankGUI extends JFrame {
         // Contents:
         outputArea = new JTextArea("");
         outputArea.setEditable(false);
-        fileInputField = new JTextField("example.gbff");
+        // Added example.gbff for easy and faster testing TODO: remove before handing in
+        fileInputField = new JTextField("/home/tardigrada/Documents/bio-informatica_leerjaar2/informatica/periode2/BI6a_Kans1_ABos/sample.gbff");
         authorInputField = new JTextField("");
         titleInputField = new JTextField("");
         fileLabel = new JLabel("Select a gbff-file:");
@@ -115,10 +116,23 @@ public class GenbankGUI extends JFrame {
      *
      * @param file
      */
-    private void getFile(File file) {
+    public static String getFile() {
+        String fileName = new String();
+        File selectedFile;
+        int reply;
+        JFileChooser fileChooser = new JFileChooser();
+        reply = fileChooser.showOpenDialog(null);
+        if (reply == JFileChooser.APPROVE_OPTION) {
+            selectedFile = fileChooser.getSelectedFile();
+            fileName = selectedFile.getAbsolutePath();
+        }
+        return fileName;
+    }
+    private void getData() {
+        String fileName = getFile();
         try {
             //input file reader
-            BufferedReader inFile = new BufferedReader(new FileReader(file));
+            BufferedReader inFile = new BufferedReader(new FileReader(fileName));
             String str = "";
             String line;
             int count = 0;
@@ -126,7 +140,7 @@ public class GenbankGUI extends JFrame {
                 if (!line.startsWith("//")) { // TODO: rewrite if-statement
                     str = String.format(str, line);
                 } else if (line.startsWith("//")) {
-                    System.out.println(count + ". Started reading file: " + file.getName());
+                    System.out.println(count + ". Started reading file: " + fileName);
                     gbffContent = str;
                     GenbankParser.TitleAuthorHash();
                     GenbankParser.AuthorTitleHash();
@@ -136,7 +150,7 @@ public class GenbankGUI extends JFrame {
                 }
             }
             inFile.close();
-            System.out.println(count + ". Finished reading file: " + file.getName());
+            System.out.println(count + ". Finished reading file: " + fileName);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
                     "File error: " + e);
@@ -156,8 +170,8 @@ public class GenbankGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == fileButton) {
-                // do something
-                // getFile()
+                String fileName = getFile();
+                fileInputField.setText(fileName);
             }
             if (e.getSource() == searchTitleButton) {
                 // do something
